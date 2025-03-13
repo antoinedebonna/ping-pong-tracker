@@ -1,19 +1,14 @@
 import streamlit as st
 import pandas as pd
-
 from datetime import datetime
-import gspread
-from gspread_dataframe import get_as_dataframe
 
-SHEET_URL = "https://docs.google.com/spreadsheets/d/1S9mBu7_hSwSb0JQH-jAQNRUlOWQho6HcGoLJ8B0QjaI/edit?usp=sharing"
-
-gc = gspread.oauth()  # Connexion sans JSON si la feuille est publique
-sh = gc.open_by_url(SHEET_URL)
-worksheet = sh.sheet1
+# 🔄 URL d'export CSV de Google Sheets (remplace "TON_SHEET_ID" par ton vrai ID)
+CSV_URL = "https://docs.google.com/spreadsheets/d/1S9mBu7_hSwSb0JQH-jAQNRUlOWQho6HcGoLJ8B0QjaI/export?format=csv"
 
 # Charger les données
+@st.cache_data
 def load_data():
-    return get_as_dataframe(worksheet, evaluate_formulas=True).dropna(how="all")
+    return pd.read_csv(CSV_URL)
 
 data = load_data()
 
