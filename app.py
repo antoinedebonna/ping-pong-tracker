@@ -1,14 +1,22 @@
 import streamlit as st
 import pandas as pd
-import gspread
+
 from datetime import datetime
+import gspread
+from gspread_dataframe import get_as_dataframe
 
-# 🔄 Connexion à Google Sheets avec authentification
-gc = gspread.service_account(filename='credentials.json')  # Utilise un fichier JSON d'authentification
+SHEET_URL = "https://docs.google.com/spreadsheets/d/TON_SHEET_ID/edit#gid=0"
 
-SHEET_URL = "https://docs.google.com/spreadsheets/d/1S9mBu7_hSwSb0JQH-jAQNRUlOWQho6HcGoLJ8B0QjaI/edit?usp=sharing"
+gc = gspread.oauth()  # Connexion sans JSON si la feuille est publique
 sh = gc.open_by_url(SHEET_URL)
 worksheet = sh.sheet1
+
+# Charger les données
+def load_data():
+    return get_as_dataframe(worksheet, evaluate_formulas=True).dropna(how="all")
+
+data = load_data()
+
 
 # Charger les données
 def load_data():
