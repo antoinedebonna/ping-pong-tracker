@@ -1,23 +1,65 @@
 import streamlit as st
 import pandas as pd
-from datetime import datetime
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+import plotly.express as px
+from datetime import datetime
 
 # 🔄 URL d'export CSV de Google Sheets
 CSV_URL = "https://docs.google.com/spreadsheets/d/1S9mBu7_hSwSb0JQH-jAQNRUlOWQho6HcGoLJ8B0QjaI/export?format=csv"
 
-# Charger les données depuis Google Sheets
+# Fonction pour charger les données depuis Google Sheets
 
 def load_data():
     return pd.read_csv(CSV_URL)
 
 data = load_data()
 
-# 🎨 Mise en page adaptée
-st.title("Suivi des matchs de Ping-Pong 🏓")
+# 🎨 Interface principale
+st.title("🏓 Suivi des matchs de Ping-Pong")
 
-# Transformer les données pour correspondre à la mise en page souhaitée
+# 🎯 📊 Statistiques des victoires avec un camembert
+wins = data["Vainqueur"].value_counts()
+fig = px.pie(names=wins.index, values=wins.values, title="Répartition des victoires")
+st.plotly_chart(fig)
+
+# 📝 📅 Formulaire d'ajout de match
+st.subheader("Ajouter un match")
+with st.form("add_match_form"):
+    date = st.date_input("Date", datetime.today())
+    player1 = st.text_input("Joueur 1")
+    player2 = st.text_input("Joueur 2")
+    sets = st.number_input("Nombre de sets gagnant", min_value=1, step=1)
+    
+    st.markdown("### Scores des Sets")
+    set_scores = []
+    
+    for i in range(sets * 2 - 1):  # Nombre total de sets possibles
+        col1, col2 = st.columns(2)
+        with col1:
+            p1_score = st.number_input(f"Set {i+1} - {player1}", min_value=0, step=1)
+        with col2:
+            p2_score = st.number_input(f"Set {i+1} - {player2}", min_value=0, step=1)
+        set_scores.append((p1_score, p2_score))
+
+    # Calcul automatique du gagnant
+    p1_sets_won = sum(1 for s1, s2 in set_scores if s1 > s2)
+    p2_sets_won = sum(1 for s1, s2 in set_scores if s2 > s1)
+
+    winner = player1 if p1_sets_won > p2_sets_won else player2
+    result = f"{p1_sets_won}-{p2_sets_won}"
+
+    remarks = st.text_area("Remarques")
+
+    submit = st.form_submit_button("Ajouter le match")
+
+    if submit:
+        new_match = [str(date), player1, player2] + [s1 for s1, s2 in set_scores] + [p1_sets_won] + [p2_sets_won] + [winner, result, remarks]
+        st.success(f"Match ajouté ! {winner} a gagné {result}")
+
+# 🎭 📜 Affichage du tableau des matchs formaté
+st.subheader("Historique des matchs")
+
 def format_match_data(df):
     matches = []
     
