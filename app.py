@@ -1,9 +1,19 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 
 # 🐄 URL d'export CSV de Google Sheets
 CSV_URL = "https://docs.google.com/spreadsheets/d/1S9mBu7_hSwSb0JQH-jAQNRUlOWQho6HcGoLJ8B0QjaI/export?format=csv"
+SHEET_ID = "1S9mBu7_hSwSb0JQH-jAQNRUlOWQho6HcGoLJ8B0QjaI"
+SHEET_NAME = "Feuille"  # Remplace par le nom de ta feuille
+
+# Authentification Google Sheets
+scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
+client = gspread.authorize(creds)
+sheet = client.open_by_key(SHEET_ID).worksheet(SHEET_NAME)
 
 # Charger les données depuis Google Sheets
 @st.cache_data
@@ -14,8 +24,6 @@ data = load_data()
 
 # 🎨 Mise en page adaptée
 st.title("Suivi des matchs de Ping-Pong 🏳")
-
-# Transformer les données pour correspondre à la mise en page souhaitée
 
 def calculate_set_wins(scores1, scores2):
     player1_sets = 0
@@ -28,7 +36,6 @@ def calculate_set_wins(scores1, scores2):
             player2_sets += 1
     
     return player1_sets, player2_sets
-
 
 def format_match_data(df):
     matches = []
@@ -57,6 +64,25 @@ def format_match_data(df):
     # Créer un DataFrame pour affichage
     columns = ["Date", "Joueur"] + [f"Set {i+1}" for i in range(len(player1_scores))] + ["Total"]
     return pd.DataFrame(matches, columns=columns)
+
+# Formulaire pour ajouter un match
+st.subheader("Ajouter un match")
+match_date = st.date_input("Date du match", datetime.today())
+set1_j1 = st.number_input("Set 1 - Antoine", min_value=0, step=1)
+set1_j2 = st.number_input("Set 1 - Clément", min_value=0, step=1)
+set2_j1 = st.number_input("Set 2 - Antoine", min_value=0, step=1)
+set2_j2 = st.number_input("Set 2 - Clément", min_value=0, step=1)
+set3_j1 = st.number_input("Set 3 - Antoine", min_value=0, step=1)
+set3_j2 = st.number_input("Set 3 - Clément", min_value=0, step=1)
+
+if st.button("Ajouter le match"):
+    new_data = [
+        [match_date.strftime('%Y-%m-%d'), "Antoine", set1_j1, set2_j1, set3_j1],
+        [match_date.strftime('%Y-%m-%d'), "Clément", set1_j2, set2_j2, set3_j2]
+    ]
+    sheet.append_rows(new_data)
+    st.success("Match ajouté avec succès !")
+    st.experimental_rerun()
 
 # Transformer et afficher les données sous la nouvelle mise en page
 formatted_data = format_match_data(data)
