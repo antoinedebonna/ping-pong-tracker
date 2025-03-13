@@ -1,21 +1,17 @@
 import streamlit as st
 import pandas as pd
 import gspread
-from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
 
-# 🔑 Authentification avec Google Sheets
-scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
-client = gspread.authorize(creds)
+# 🔄 Connexion à Google Sheets en mode public
+SHEET_URL = "https://docs.google.com/spreadsheets/d/1S9mBu7_hSwSb0JQH-jAQNRUlOWQho6HcGoLJ8B0QjaI/edit?gid=0#gid=0"
+gc = gspread.client.Client(auth=None)  # Connexion sans authentification
+sh = gc.open_by_url(SHEET_URL)
+worksheet = sh.sheet1
 
-# 🔄 Charger la Google Sheet
-SHEET_NAME = "PingPong_Matches"
-sheet = client.open(SHEET_NAME).sheet1
-
-# Charger les données dans un DataFrame
+# Charger les données
 def load_data():
-    data = sheet.get_all_records()
+    data = worksheet.get_all_records()
     return pd.DataFrame(data)
 
 data = load_data()
@@ -44,7 +40,7 @@ with st.form("add_match_form"):
 
     if submit:
         new_match = [str(date), winner, terrain, sets, result, remarks]
-        sheet.append_row(new_match)  # 🔄 Ajout à la Google Sheet
+        worksheet.append_row(new_match)  # 🔄 Ajout à la Google Sheet
         st.success("Match ajouté ! Recharge la page pour voir la mise à jour.")
 
 # 📜 Affichage des matchs
