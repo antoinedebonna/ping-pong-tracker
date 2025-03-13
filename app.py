@@ -40,15 +40,12 @@ with st.form("add_match_form"):
     terrain = st.text_input("Terrain")
     player1 = st.text_input("Joueur 1")
     player2 = st.text_input("Joueur 2")
-    sets = st.number_input("Nombre de sets gagnants", min_value=1, step=1)
-    set_scores = []
     
-    for i in range(sets * 2 - 1):
+    set_scores = []
+    for i in range(5):  # Affiche toujours 5 sets
         col1, col2 = st.columns(2)
         with col1:
             score1 = st.number_input(f"Set {i+1} - {player1}", min_value=0, step=1, key=f"score1_set{i}")
-
-
         with col2:
             score2 = st.number_input(f"Set {i+1} - {player2}", min_value=0, step=1, key=f"score2_set{i}")
         set_scores.append((score1, score2))
@@ -61,8 +58,5 @@ with st.form("add_match_form"):
         worksheet.append_row(row_data)
         row_data = ["", "", player2] + [s[1] for s in set_scores] + [sum(1 for s in set_scores if s[1] > s[0]), ""]
         worksheet.append_row(row_data)
-        st.success("Match ajouté ! Recharge la page pour voir la mise à jour.")
-
-# Affichage des matchs formaté
-st.subheader("Historique des matchs")
-st.dataframe(data)
+        st.success("Match ajouté ! La page va se recharger...")
+        st.experimental_rerun()  # Recharge la page immédiatement après l'ajout
