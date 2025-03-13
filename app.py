@@ -39,11 +39,11 @@ def format_match_data(df):
 
         match_date = row["Date"]
         player1 = row["Joueur"]
-        player1_scores = row.iloc[2:-1].astype(int).values  # Récupérer les scores du joueur 1
+        player1_scores = pd.to_numeric(row.iloc[2:], errors='coerce').fillna(0).astype(int).values  # Récupérer les scores du joueur 1
 
         if opponent_row is not None:
             player2 = opponent_row["Joueur"]
-            player2_scores = opponent_row.iloc[2:-1].astype(int).values  # Scores du joueur 2
+            player2_scores = pd.to_numeric(opponent_row.iloc[2:], errors='coerce').fillna(0).astype(int).values  # Scores du joueur 2
         else:
             player2 = ""
             player2_scores = [0] * len(player1_scores)
