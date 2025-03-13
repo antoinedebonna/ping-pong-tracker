@@ -3,9 +3,10 @@ import pandas as pd
 import gspread
 from datetime import datetime
 
-# 🔄 Connexion à Google Sheets en mode public
-SHEET_URL = "https://docs.google.com/spreadsheets/d/1S9mBu7_hSwSb0JQH-jAQNRUlOWQho6HcGoLJ8B0QjaI/edit?gid=0#gid=0"
-gc = gspread.client.Client(auth=None)  # Connexion sans authentification
+# 🔄 Connexion à Google Sheets avec authentification
+gc = gspread.service_account(filename='credentials.json')  # Utilise un fichier JSON d'authentification
+
+SHEET_URL = "https://docs.google.com/spreadsheets/d/1S9mBu7_hSwSb0JQH-jAQNRUlOWQho6HcGoLJ8B0QjaI/edit?usp=sharing"
 sh = gc.open_by_url(SHEET_URL)
 worksheet = sh.sheet1
 
