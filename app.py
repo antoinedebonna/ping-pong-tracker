@@ -30,12 +30,9 @@ worksheet = authenticate_gspread()
 # Interface principale
 st.title("Suivi des matchs de Ping-Pong")
 
-# Ajout de la colonne Résultat
-data["Résultat"] = data.apply(lambda row: "✅ V" if row["Total"] == data[data["Date"] == row["Date"]]["Total"].max() else "❌ D", axis=1)
-
 # Statistiques avec camembert (nombre de victoires)
 win_counts = data[data["Résultat"] == "✅ V"].groupby("Joueur")["Résultat"].count()
-fig = px.pie(win_counts, values=win_counts.values, names=win_counts.index, title="Nombre de victoires par joueur")
+fig = px.pie(win_counts, values=win_counts.values, names=win_counts.index, title="Nombre de victoires par joueur", hole=0.3)
 st.plotly_chart(fig)
 
 # Formulaire d'ajout de match
@@ -73,3 +70,18 @@ with st.form("add_match_form"):
 # Affichage des matchs formaté avec la colonne "Terrain" et "Résultat"
 st.subheader("Historique des matchs")
 st.dataframe(data[["Date", "Terrain", "Joueur", "Résultat", "Set 1", "Set 2", "Set 3", "Set 4", "Set 5", "Total", "Remarques"]])
+
+# Suppression d'un match
+st.subheader("Supprimer un match")
+dates = data["Date"].unique()
+selected_date = st.selectbox("Sélectionnez la date du match à supprimer", dates)
+selected_joueur = st.selectbox("Sélectionnez le joueur", data[data["Date"] == selected_date]["Joueur"].unique())
+
+if st.button("Supprimer"):
+    all_records = worksheet.get_all_records()
+    new_records = [record for record in all_records if not (record["Date"] == selected_date and record["Joueur"] == selected_joueur)]
+    worksheet.clear()
+    worksheet.append_row(list(all_records[0].keys()))  # Réécrire les en-têtes
+    for record in new_records:
+        worksheet.append_row(list(record.values()))
+    st.success("Match supprimé !")
