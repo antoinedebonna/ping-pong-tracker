@@ -1,45 +1,27 @@
 import streamlit as st
 import pandas as pd
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
 
-# Load data (or initialize an empty DataFrame)
-@st.cache_data
+# 🔑 Authentification avec Google Sheets
+scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
+client = gspread.authorize(creds)
+
+# 🔄 Charger la Google Sheet
+SHEET_NAME = "PingPong_Matches"
+sheet = client.open(SHEET_NAME).sheet1
+
+# Charger les données dans un DataFrame (sans mise en cache)
 def load_data():
-    return pd.DataFrame(columns=["Date", "Vainqueur", "Terrain", "Nb de sets gagnant", "Résultat", "Remarques"])
+    data = sheet.get_all_records()
+    return pd.DataFrame(data)
 
-data = load_data()
-
-# Title
+# Interface
 st.title("Suivi des matchs de Ping-Pong")
 
-# Sidebar filters
-st.sidebar.header("Filtres")
-selected_year = st.sidebar.selectbox("Année", ["Toutes"] + sorted(set(pd.to_datetime(data["Date"]).dt.year.dropna()), reverse=True))
-selected_month = st.sidebar.selectbox("Mois", ["Tous"] + list(range(1, 13)))
-selected_terrain = st.sidebar.selectbox("Terrain", ["Tous"] + list(data["Terrain"].unique()))
-
-# Apply filters
-filtered_data = data.copy()
-if selected_year != "Toutes":
-    filtered_data = filtered_data[pd.to_datetime(filtered_data["Date"]).dt.year == selected_year]
-if selected_month != "Tous":
-    filtered_data = filtered_data[pd.to_datetime(filtered_data["Date"]).dt.month == selected_month]
-if selected_terrain != "Tous":
-    filtered_data = filtered_data[filtered_data["Terrain"] == selected_terrain]
-
-# Win count
-wins = filtered_data["Vainqueur"].value_counts()
-antoine_wins = wins.get("Antoine", 0)
-clement_wins = wins.get("Clément", 0)
-
-st.metric(label="Victoires d'Antoine", value=antoine_wins)
-st.metric(label="Victoires de Clément", value=clement_wins)
-
-# Match history
-st.subheader("Historique des matchs")
-st.dataframe(filtered_data)
-
-# Add new match
+# 📅 Ajout de match
 st.subheader("Ajouter un match")
 with st.form("add_match_form"):
     date = st.date_input("Date", datetime.today())
@@ -49,8 +31,16 @@ with st.form("add_match_form"):
     result = st.text_input("Résultat (ex: 3-2)")
     remarks = st.text_area("Remarques")
     submit = st.form_submit_button("Ajouter")
-    
+
     if submit:
-        new_match = pd.DataFrame([[date, winner, terrain, sets, result, remarks]], columns=data.columns)
-        data = pd.concat([data, new_match], ignore_index=True)
-        st.success("Match ajouté ! Recharge la page pour voir la mise à jour.")
+        new_match = [str(date), winner, terrain, sets, result, remarks]
+        sheet.append_row(new_match)  # 🔄 Ajout à la Google Sheet
+        st.success("Match ajouté ! Actualisation des données en cours...")
+
+        # 🚀 Forcer la mise à jour en rechargeant les données après ajout
+        st.experimental_rerun()
+
+# 📜 Affichage des matchs
+st.subheader("Historique des matchs")
+data = load_data()  # 🔄 Charger à nouveau les données
+st.dataframe(data)
