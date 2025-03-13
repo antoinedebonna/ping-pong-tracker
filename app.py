@@ -8,7 +8,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 CSV_URL = "https://docs.google.com/spreadsheets/d/1S9mBu7_hSwSb0JQH-jAQNRUlOWQho6HcGoLJ8B0QjaI/export?format=csv"
 
 # Charger les données depuis Google Sheets (si tu veux utiliser gspread au lieu de l'URL CSV)
-@st.cache_data
+
 def load_data():
     return pd.read_csv(CSV_URL)
 
