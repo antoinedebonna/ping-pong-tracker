@@ -40,14 +40,14 @@ with st.form("add_match_form"):
     terrain = st.text_input("Terrain")
     player1 = st.text_input("Joueur 1")
     player2 = st.text_input("Joueur 2")
-    
     set_scores = []
-    for i in range(5):  # Affiche toujours 5 sets
+    
+    for i in range(5):  # Toujours afficher 5 sets
         col1, col2 = st.columns(2)
         with col1:
-            score1 = st.number_input(f"Set {i+1} - {player1}", min_value=0, step=1, key=f"score1_set{i}")
+            score1 = st.number_input(f"Set {i+1} - {player1}", min_value=0, step=1, key=f"score1_{i}")
         with col2:
-            score2 = st.number_input(f"Set {i+1} - {player2}", min_value=0, step=1, key=f"score2_set{i}")
+            score2 = st.number_input(f"Set {i+1} - {player2}", min_value=0, step=1, key=f"score2_{i}")
         set_scores.append((score1, score2))
     
     remarks = st.text_area("Remarques")
@@ -56,7 +56,14 @@ with st.form("add_match_form"):
     if submit:
         row_data = [str(date), terrain, player1] + [s[0] for s in set_scores] + [sum(1 for s in set_scores if s[0] > s[1]), remarks]
         worksheet.append_row(row_data)
-        row_data = ["", "", player2] + [s[1] for s in set_scores] + [sum(1 for s in set_scores if s[1] > s[0]), ""]
+        row_data = ["", terrain, player2] + [s[1] for s in set_scores] + [sum(1 for s in set_scores if s[1] > s[0]), ""]
         worksheet.append_row(row_data)
-        st.success("Match ajouté ! La page va se recharger...")
-        st.experimental_rerun()  # Recharge la page immédiatement après l'ajout
+        st.success("Match ajouté ! Recharge la page pour voir la mise à jour.")
+
+
+# Affichage des matchs formaté avec la colonne "Terrain"
+st.subheader("Historique des matchs")
+if "Terrain" in data.columns:
+    st.dataframe(data[["Date", "Terrain", "Joueur", "Set 1", "Set 2", "Set 3", "Set 4", "Set 5", "Total", "Remarques"]])
+else:
+    st.dataframe(data)
