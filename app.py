@@ -8,7 +8,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 CSV_URL = "https://docs.google.com/spreadsheets/d/1S9mBu7_hSwSb0JQH-jAQNRUlOWQho6HcGoLJ8B0QjaI/export?format=csv"
 
 # Charger les données depuis Google Sheets
-@st.cache_data
+
 def load_data():
     return pd.read_csv(CSV_URL)
 
@@ -28,12 +28,12 @@ def format_match_data(df):
         match_date = row["Date"]
         player1 = row["Joueur"]
         player1_scores = row.iloc[2:-1].values  # Récupérer les scores du joueur 1
-        player1_sets = row["Sets Gagnés"]
+        player1_sets = row["Total"]
 
         if opponent_row is not None:
             player2 = opponent_row["Joueur"]
             player2_scores = opponent_row.iloc[2:-1].values  # Scores du joueur 2
-            player2_sets = opponent_row["Sets Gagnés"]
+            player2_sets = opponent_row["Total"]
         else:
             player2 = ""
             player2_scores = ["-"] * (len(player1_scores))
