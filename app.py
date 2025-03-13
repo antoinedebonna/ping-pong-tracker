@@ -36,30 +36,29 @@ st.plotly_chart(fig)
 # Formulaire d'ajout de match
 st.subheader("Ajouter un match")
 with st.form("add_match_form"):
+    st.markdown("### Antoine vs Clément")
     date = st.date_input("Date", datetime.today())
     terrain = st.text_input("Terrain")
-    player1 = st.text_input("Joueur 1")
-    player2 = st.text_input("Joueur 2")
     set_scores = []
     
     for i in range(5):  # Toujours afficher 5 sets
         col1, col2 = st.columns(2)
         with col1:
-            score1 = st.number_input(f"Set {i+1} - {player1}", min_value=0, step=1, key=f"score1_{i}")
+            score1 = st.number_input(f"Set {i+1} - Antoine", min_value=0, step=1, key=f"score1_{i}")
         with col2:
-            score2 = st.number_input(f"Set {i+1} - {player2}", min_value=0, step=1, key=f"score2_{i}")
+            score2 = st.number_input(f"Set {i+1} - Clément", min_value=0, step=1, key=f"score2_{i}")
         set_scores.append((score1, score2))
     
     remarks = st.text_area("Remarques")
     submit = st.form_submit_button("Ajouter")
     
     if submit:
-        row_data = [str(date), terrain, player1] + [s[0] for s in set_scores] + [sum(1 for s in set_scores if s[0] > s[1]), remarks]
+        row_data = [str(date), terrain, "Antoine"] + [s[0] for s in set_scores] + [sum(1 for s in set_scores if s[0] > s[1]), remarks]
         worksheet.append_row(row_data)
-        row_data = ["", terrain, player2] + [s[1] for s in set_scores] + [sum(1 for s in set_scores if s[1] > s[0]), ""]
+        row_data = ["", terrain, "Clément"] + [s[1] for s in set_scores] + [sum(1 for s in set_scores if s[1] > s[0]), ""]
         worksheet.append_row(row_data)
-        st.success("Match ajouté ! Recharge la page pour voir la mise à jour.")
-
+        st.success("Match ajouté !")
+        
 
 # Affichage des matchs formaté avec la colonne "Terrain"
 st.subheader("Historique des matchs")
