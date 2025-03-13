@@ -1,27 +1,26 @@
 import streamlit as st
 import pandas as pd
+import matplotlib.pyplot as plt
 from datetime import datetime
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
-# 🔄 URL d'export CSV de Google Sheets (si tu veux une autre méthode, sinon utilise gspread)
+# 🔄 URL d'export CSV de Google Sheets
 CSV_URL = "https://docs.google.com/spreadsheets/d/1S9mBu7_hSwSb0JQH-jAQNRUlOWQho6HcGoLJ8B0QjaI/export?format=csv"
 
-# Charger les données depuis Google Sheets (si tu veux utiliser gspread au lieu de l'URL CSV)
-
+# Charger les données depuis Google Sheets
 def load_data():
     return pd.read_csv(CSV_URL)
 
 data = load_data()
 
-# 🔄 Authentification avec Google Sheets via gspread (si tu préfères utiliser gspread)
+# 🔄 Authentification avec Google Sheets via gspread
 def authenticate_gspread():
-    # Utilise les secrets de Streamlit (ou credentials.json dans ton cas)
     credentials = ServiceAccountCredentials.from_json_keyfile_dict(st.secrets["GOOGLE_SHEET_CREDENTIALS"], 
                                                                   ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"])
     client = gspread.authorize(credentials)
-    sheet = client.open_by_url(CSV_URL)  # Utilise l'URL de ton Google Sheet
-    worksheet = sheet.get_worksheet(0)  # Sélectionner la première feuille
+    sheet = client.open_by_url(CSV_URL)
+    worksheet = sheet.get_worksheet(0)
     return worksheet
 
 worksheet = authenticate_gspread()
@@ -31,11 +30,13 @@ st.title("Suivi des matchs de Ping-Pong")
 
 # 📊 Affichage des stats
 wins = data["Vainqueur"].value_counts()
-antoine_wins = wins.get("Antoine", 0)
-clement_wins = wins.get("Clément", 0)
+labels = ["Antoine", "Clément"]
+values = [wins.get("Antoine", 0), wins.get("Clément", 0)]
 
-st.metric(label="Victoires d'Antoine", value=antoine_wins)
-st.metric(label="Victoires de Clément", value=clement_wins)
+fig, ax = plt.subplots()
+ax.pie(values, labels=labels, autopct='%1.1f%%', startangle=90, colors=["blue", "red"])
+ax.axis("equal")  # Assure que le camembert est un cercle
+st.pyplot(fig)
 
 # 📅 Ajout de match
 st.subheader("Ajouter un match")
@@ -44,14 +45,21 @@ with st.form("add_match_form"):
     winner = st.selectbox("Vainqueur", ["Antoine", "Clément"])
     terrain = st.text_input("Terrain")
     sets = st.number_input("Nombre de sets gagnant", min_value=1, step=1)
-    result = st.text_input("Résultat (ex: 3-2)")
+    
+    # Champs pour entrer les scores de chaque set
+    scores = []
+    for i in range(sets * 2 - 1):
+        scores.append(st.text_input(f"Score Set {i+1}", ""))
+    
     remarks = st.text_area("Remarques")
     submit = st.form_submit_button("Ajouter")
-
+    
     if submit:
+        result = "-".join(scores)  # Format des résultats en "11-9, 9-11, 11-7"
         new_match = [str(date), winner, terrain, sets, result, remarks]
-        worksheet.append_row(new_match)  # 🔄 Ajout à la Google Sheet
-        st.success("Match ajouté ! Recharge la page pour voir la mise à jour.")
+        worksheet.append_row(new_match)
+        st.success("Match ajouté !")
+        st.experimental_rerun()  # Recharge la page automatiquement
 
 # 📜 Affichage des matchs
 st.subheader("Historique des matchs")
