@@ -4,57 +4,48 @@ from datetime import datetime
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
-# 🔄 URL d'export CSV de Google Sheets (si tu veux une autre méthode, sinon utilise gspread)
+# 🔄 URL d'export CSV de Google Sheets
 CSV_URL = "https://docs.google.com/spreadsheets/d/1S9mBu7_hSwSb0JQH-jAQNRUlOWQho6HcGoLJ8B0QjaI/export?format=csv"
 
-# Charger les données depuis Google Sheets (si tu veux utiliser gspread au lieu de l'URL CSV)
-
+# Charger les données depuis Google Sheets
+@st.cache_data
 def load_data():
     return pd.read_csv(CSV_URL)
 
 data = load_data()
 
-# 🔄 Authentification avec Google Sheets via gspread (si tu préfères utiliser gspread)
-def authenticate_gspread():
-    # Utilise les secrets de Streamlit (ou credentials.json dans ton cas)
-    credentials = ServiceAccountCredentials.from_json_keyfile_dict(st.secrets["GOOGLE_SHEET_CREDENTIALS"], 
-                                                                  ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"])
-    client = gspread.authorize(credentials)
-    sheet = client.open_by_url(CSV_URL)  # Utilise l'URL de ton Google Sheet
-    worksheet = sheet.get_worksheet(0)  # Sélectionner la première feuille
-    return worksheet
+# 🎨 Mise en page adaptée
+st.title("Suivi des matchs de Ping-Pong 🏓")
 
-worksheet = authenticate_gspread()
+# Transformer les données pour correspondre à la mise en page souhaitée
+def format_match_data(df):
+    matches = []
+    
+    for i in range(0, len(df), 2):  # Lire les données en duo (Joueur 1 & Joueur 2)
+        row = df.iloc[i]
+        opponent_row = df.iloc[i + 1] if i + 1 < len(df) else None  # Vérifier s'il y a un adversaire
 
-# 🏆 Interface principale
-st.title("Suivi des matchs de Ping-Pong")
+        match_date = row["Date"]
+        player1 = row["Joueur"]
+        player1_scores = row.iloc[2:-1].values  # Récupérer les scores du joueur 1
+        player1_sets = row["Sets Gagnés"]
 
-# 📊 Affichage des stats
-wins = data["Vainqueur"].value_counts()
-antoine_wins = wins.get("Antoine", 0)
-clement_wins = wins.get("Clément", 0)
+        if opponent_row is not None:
+            player2 = opponent_row["Joueur"]
+            player2_scores = opponent_row.iloc[2:-1].values  # Scores du joueur 2
+            player2_sets = opponent_row["Sets Gagnés"]
+        else:
+            player2 = ""
+            player2_scores = ["-"] * (len(player1_scores))
+            player2_sets = ""
 
-st.metric(label="Victoires d'Antoine", value=antoine_wins)
-st.metric(label="Victoires de Clément", value=clement_wins)
+        matches.append([match_date, player1] + list(player1_scores) + [player1_sets])
+        matches.append(["", player2] + list(player2_scores) + [player2_sets])
 
-# 📅 Ajout de match
-st.subheader("Ajouter un match")
-with st.form("add_match_form"):
-    date = st.date_input("Date", datetime.today())
-    winner = st.selectbox("Vainqueur", ["Antoine", "Clément"])
-    terrain = st.text_input("Terrain")
-    sets = st.number_input("Nombre de sets gagnant", min_value=1, step=1)
-    result = st.text_input("Résultat (ex: 3-2)")
-    remarks = st.text_area("Remarques")
-    submit = st.form_submit_button("Ajouter")
+    # Créer un DataFrame pour affichage
+    columns = ["Date", "Joueur"] + [f"Set {i+1}" for i in range(len(player1_scores))] + ["Total"]
+    return pd.DataFrame(matches, columns=columns)
 
-    if submit:
-        new_match = [str(date), winner, terrain, sets, result, remarks]
-        worksheet.append_row(new_match)  # 🔄 Ajout à la Google Sheet
-        st.success("Match ajouté ! Recharge la page pour voir la mise à jour.")
-
-# 📜 Affichage des matchs
-st.subheader("Historique des matchs")
-st.dataframe(data)"
-
-
+# Transformer et afficher les données sous la nouvelle mise en page
+formatted_data = format_match_data(data)
+st.dataframe(formatted_data, hide_index=True)
