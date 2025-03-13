@@ -46,9 +46,11 @@ with st.form("add_match_form"):
     for i in range(sets * 2 - 1):
         col1, col2 = st.columns(2)
         with col1:
-            score1 = st.number_input(f"Set {i+1} - {player1}", min_value=0, step=1)
+            score1 = st.number_input(f"Set {i+1} - {player1}", min_value=0, step=1, key=f"score1_set{i}")
+
+
         with col2:
-            score2 = st.number_input(f"Set {i+1} - {player2}", min_value=0, step=1)
+            score2 = st.number_input(f"Set {i+1} - {player2}", min_value=0, step=1, key=f"score2_set{i}")
         set_scores.append((score1, score2))
     
     remarks = st.text_area("Remarques")
