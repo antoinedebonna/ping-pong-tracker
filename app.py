@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
-import plotly.express as px
+
 from datetime import datetime
 
 # 🔄 URL d'export CSV de Google Sheets
@@ -20,8 +20,6 @@ st.title("🏓 Suivi des matchs de Ping-Pong")
 
 # 🎯 📊 Statistiques des victoires avec un camembert
 wins = data["Vainqueur"].value_counts()
-fig = px.pie(names=wins.index, values=wins.values, title="Répartition des victoires")
-st.plotly_chart(fig)
 
 # 📝 📅 Formulaire d'ajout de match
 st.subheader("Ajouter un match")
