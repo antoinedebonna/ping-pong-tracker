@@ -11,12 +11,12 @@ import base64
 CSV_URL = "https://docs.google.com/spreadsheets/d/1S9mBu7_hSwSb0JQH-jAQNRUlOWQho6HcGoLJ8B0QjaI/export?format=csv"
 
 def load_data():
-    return pd.read_csv(CSV_URL)
+    data = pd.read_csv(CSV_URL)
+    data["Date"] = data["Date"].astype(str).dropna()
+    data["Terrain"] = data["Terrain"].astype(str).fillna("Inconnu")
+    return data
 
 data = load_data()
-
-# Assurer que la colonne "Date" est bien en string
-data["Date"] = data["Date"].astype(str)
 
 def authenticate_gspread():
     credentials = ServiceAccountCredentials.from_json_keyfile_dict(
@@ -49,8 +49,7 @@ if not filtered_data.empty:
     
     if not win_counts.empty:
         fig = px.pie(win_counts, values=win_counts.values, names=win_counts.index, title="Nombre de victoires par joueur", hole=0.3)
-        st.write(fig)
-        st.plotly_chart(fig)
+        st.plotly_chart(fig, key="win_chart")
     else:
         st.warning("Aucune victoire détectée pour ce filtre.")
 else:
