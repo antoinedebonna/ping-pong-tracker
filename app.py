@@ -15,6 +15,9 @@ def load_data():
 
 data = load_data()
 
+# Assurer que la colonne "Date" est bien en string
+data["Date"] = data["Date"].astype(str)
+
 def authenticate_gspread():
     credentials = ServiceAccountCredentials.from_json_keyfile_dict(
         st.secrets["GOOGLE_SHEET_CREDENTIALS"],
@@ -32,22 +35,26 @@ st.title("Suivi des matchs de Ping-Pong")
 
 # Filtres pour le camembert
 st.subheader("Filtres")
-data["Date"] = data["Date"].astype(str)  # Assurer que toutes les valeurs sont des chaînes
 selected_year = st.selectbox("Sélectionnez une année", sorted(data["Date"].str[:4].dropna().unique(), reverse=True))
+selected_terrain = st.selectbox("Sélectionnez un terrain", data["Terrain"].dropna().unique())
 
-selected_terrain = st.selectbox("Sélectionnez un terrain", data["Terrain"].unique())
-
+# Filtrage des données
 filtered_data = data[(data["Date"].str.startswith(selected_year)) & (data["Terrain"] == selected_terrain)]
+st.write("Nombre de lignes après filtrage :", len(filtered_data))
 
 # Statistiques avec camembert (nombre de victoires)
-win_counts = filtered_data[filtered_data["Résultat"] == "✅ V"].groupby("Joueur")["Résultat"].count()
-fig = px.pie(win_counts, values=win_counts.values, names=win_counts.index, title="Nombre de victoires par joueur", hole=0.3)
-
-# Affichage du nombre de victoires par joueur
-for joueur, victoires in win_counts.items():
-    st.markdown(f"<h2 style='text-align: center; color: green;'>{joueur}: {victoires} victoires</h2>", unsafe_allow_html=True)
-
-st.plotly_chart(fig)
+if not filtered_data.empty:
+    win_counts = filtered_data[filtered_data["Résultat"] == "✅ V"].groupby("Joueur")["Résultat"].count().dropna()
+    st.write("Victoires détectées :", win_counts)
+    
+    if not win_counts.empty:
+        fig = px.pie(win_counts, values=win_counts.values, names=win_counts.index, title="Nombre de victoires par joueur", hole=0.3)
+        st.write(fig)
+        st.plotly_chart(fig)
+    else:
+        st.warning("Aucune victoire détectée pour ce filtre.")
+else:
+    st.warning("Aucune donnée trouvée pour cette année et ce terrain.")
 
 # Formulaire d'ajout de match
 st.subheader("Ajouter un match")
