@@ -140,41 +140,46 @@ with tab1:
 
 
 
-    # 📊 Graphique des victoires avec annotations
-    if not data_filtered.empty:
-        win_counts = data_filtered.groupby(["Joueur", "Résultat"]).size().unstack(fill_value=0)
-        win_counts = win_counts.get("✅ V", pd.Series(0, index=win_counts.index))
-    
-        # Nombre de victoires pour Antoine et Clément
-        victories_antoine = win_counts.get("Antoine", 0)
-        victories_clement = win_counts.get("Clément", 0)
-    
-        # Créer un graphique camembert avec Plotly
-        fig_pie = px.pie(win_counts, values=win_counts.values, names=win_counts.index, title="Nombre de victoires par joueur", hole=0.3)
-    
-        # Ajouter des annotations pour les nombres de victoires
-        fig_pie.update_layout(
-            annotations=[
-                # Annotation pour Antoine à gauche
-                dict(
-                    x=0.25,  # Positionnement à gauche
-                    y=0.5,  # Centré verticalement
-                    text=f"<b>{victories_antoine}</b>",  # Nombre de victoires d'Antoine
-                    font=dict(size=40, color="black"),  # Grande taille de texte, couleur blanche
-                    showarrow=False
-                ),
-                # Annotation pour Clément à droite
-                dict(
-                    x=0.75,  # Positionnement à droite
-                    y=0.5,  # Centré verticalement
-                    text=f"<b>{victories_clement}</b>",  # Nombre de victoires de Clément
-                    font=dict(size=40, color="black"),  # Grande taille de texte, couleur blanche
-                    showarrow=False
-                ),
-            ]
+# 📊 Graphique des victoires avec annotations
+if not data_filtered.empty:
+    win_counts = data_filtered.groupby(["Joueur", "Résultat"]).size().unstack(fill_value=0)
+    win_counts = win_counts.get("✅ V", pd.Series(0, index=win_counts.index))
+
+    # Nombre de victoires pour Antoine et Clément
+    victories_antoine = win_counts.get("Antoine", 0)
+    victories_clement = win_counts.get("Clément", 0)
+
+    # Créer un graphique camembert avec Plotly
+    fig_pie = px.pie(win_counts, values=win_counts.values, names=win_counts.index, title="Nombre de victoires par joueur", hole=0.3)
+
+    # Ajouter des annotations pour les nombres de victoires
+    fig_pie.update_layout(
+        annotations=[
+            # Annotation pour Antoine à gauche
+            dict(
+                x=0.25,  # Positionnement à gauche
+                y=0.5,  # Centré verticalement
+                text=f"<b>{victories_antoine}</b>",  # Nombre de victoires d'Antoine
+                font=dict(size=40, color="black"),  # Grande taille de texte, couleur blanche
+                showarrow=False
+            ),
+            # Annotation pour Clément à droite
+            dict(
+                x=0.75,  # Positionnement à droite
+                y=0.5,  # Centré verticalement
+                text=f"<b>{victories_clement}</b>",  # Nombre de victoires de Clément
+                font=dict(size=40, color="black"),  # Grande taille de texte, couleur blanche
+                showarrow=False
+            ),
+        ],
+        # Augmenter la taille de la légende
+        legend=dict(
+            font=dict(size=20)  # Taille de la police de la légende
         )
-    
-        st.plotly_chart(fig_pie)
+    )
+
+    st.plotly_chart(fig_pie)
+
 
 
     # 📈 Graphique d'évolution des victoires
