@@ -8,22 +8,9 @@ from oauth2client.service_account import ServiceAccountCredentials
 st.markdown(
     """
     <style>
-        /* Ajuster la largeur de la page à 75% */
-        .main {
-            max-width: 75%;
-            margin: auto;
-        }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-st.markdown(
-    """
-    <style>
         /* Ajout d'un fond d'écran */
         body {
-            background-image: url("https://img.freepik.com/vecteurs-libre/fond-filaire-abstrait-degrade_23-2149009903.jpg?t=st=1741969816~exp=1741973416~hmac=9cc677d2ba077698548d9d29cb9ae5c7868f3862473833c8e650d8ad9cb6a9de&w=1380.jpg"); /* Remplace par ton URL */
+            background-image: url("https://www.w3schools.com/w3images/fjords.jpg");
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
