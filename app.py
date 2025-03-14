@@ -126,12 +126,12 @@ tab1, tab2 = st.tabs(["📊 Statistiques & Tableaux", "⚙️ Gestion des matchs
 
 # 🏓 Onglet 1 : Statistiques et Tableau
 with tab1:
-    st.subheader("Filtres")
+    st.subheader("Sélection des critères")
     available_years = sorted(data["Date"].str[:4].dropna().unique(), reverse=True)
     available_terrains = data["Terrain"].dropna().unique()
 
-    selected_years = st.multiselect("Sélectionnez une ou plusieurs années", available_years, default=available_years)
-    selected_terrains = st.multiselect("Sélectionnez un ou plusieurs terrains", available_terrains, default=available_terrains)
+    selected_years = st.multiselect("Sélectionnez la ou les années des confrontations", available_years, default=available_years)
+    selected_terrains = st.multiselect("Sélectionnez le ou les terrains", available_terrains, default=available_terrains)
 
     # Filtrage des données
     data_filtered = data[data["Date"].str[:4].isin(selected_years) & data["Terrain"].isin(selected_terrains)]
@@ -140,13 +140,42 @@ with tab1:
 
 
 
-    # 📊 Graphique des victoires
+    # 📊 Graphique des victoires avec annotations
     if not data_filtered.empty:
         win_counts = data_filtered.groupby(["Joueur", "Résultat"]).size().unstack(fill_value=0)
         win_counts = win_counts.get("✅ V", pd.Series(0, index=win_counts.index))
-
+    
+        # Nombre de victoires pour Antoine et Clément
+        victories_antoine = win_counts.get("Antoine", 0)
+        victories_clement = win_counts.get("Clément", 0)
+    
+        # Créer un graphique camembert avec Plotly
         fig_pie = px.pie(win_counts, values=win_counts.values, names=win_counts.index, title="Nombre de victoires par joueur", hole=0.3)
+    
+        # Ajouter des annotations pour les nombres de victoires
+        fig_pie.update_layout(
+            annotations=[
+                # Annotation pour Antoine à gauche
+                dict(
+                    x=0.25,  # Positionnement à gauche
+                    y=0.5,  # Centré verticalement
+                    text=f"<b>{victories_antoine}</b>",  # Nombre de victoires d'Antoine
+                    font=dict(size=40, color="white"),  # Grande taille de texte, couleur blanche
+                    showarrow=False
+                ),
+                # Annotation pour Clément à droite
+                dict(
+                    x=0.75,  # Positionnement à droite
+                    y=0.5,  # Centré verticalement
+                    text=f"<b>{victories_clement}</b>",  # Nombre de victoires de Clément
+                    font=dict(size=40, color="white"),  # Grande taille de texte, couleur blanche
+                    showarrow=False
+                ),
+            ]
+        )
+    
         st.plotly_chart(fig_pie)
+
 
     # 📈 Graphique d'évolution des victoires
     data_victories = data_filtered[data_filtered["Résultat"] == "✅ V"].copy()
