@@ -55,9 +55,18 @@ if not filtered_data.empty:
 else:
     st.warning("Aucune donnée trouvée pour les filtres sélectionnés.")
 
-# Affichage des matchs filtrés
-st.subheader("Historique des matchs")
-st.dataframe(filtered_data[["Date", "Terrain", "Joueur", "Résultat", "Set 1", "Set 2", "Set 3", "Set 4", "Set 5", "Total", "Remarques"]])
+# Graphique en ligne (évolution des victoires)
+if not filtered_data.empty:
+    filtered_data = filtered_data.sort_values("Date")
+    filtered_data["Match_Numero"] = range(1, len(filtered_data) + 1)
+    
+    cumulative_wins = filtered_data.groupby("Joueur")["Résultat"].apply(lambda x: (x == "✅ V").cumsum()).reset_index()
+    cumulative_wins = filtered_data.merge(cumulative_wins, on=["index", "Joueur"], how="left")
+    
+    fig_line = px.line(cumulative_wins, x="Match_Numero", y="Résultat_y", color="Joueur", markers=True,
+                        title="Évolution des victoires par joueur",
+                        labels={"Match_Numero": "Numéro du match", "Résultat_y": "Total de victoires cumulées"})
+    st.plotly_chart(fig_line, key="win_evolution")
 
 # Formulaire d'ajout de match
 st.subheader("Ajouter un match")
@@ -90,6 +99,10 @@ with st.form("add_match_form"):
         row_data = ["", terrain, "Clément", result_clement] + [s[1] for s in set_scores] + [score_clement, ""]
         worksheet.append_row(row_data)
         st.success("Match ajouté !")
+
+# Affichage des matchs formaté avec la colonne "Terrain" et "Résultat"
+st.subheader("Historique des matchs")
+st.dataframe(filtered_data[["Date", "Terrain", "Joueur", "Résultat", "Set 1", "Set 2", "Set 3", "Set 4", "Set 5", "Total", "Remarques"]])
 
 # Suppression d'un match
 st.subheader("Supprimer un match")
