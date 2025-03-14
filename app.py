@@ -16,24 +16,25 @@ st.markdown(
             background-attachment: fixed;
         }
 
-        /* Appliquer une couche semi-transparente noire sur l'image de fond */
+        /* Ajouter une couche semi-transparente noire sur l'image de fond */
         .stApp {
             background: rgba(0, 0, 0, 0.5); /* 50% noir transparent */
+        }
+
+        /* Appliquer un léger flou sur l'image de fond uniquement */
+        body {
+            filter: blur(5px); /* Applique un flou sur le fond */
+            -webkit-filter: blur(5px); /* Pour les navigateurs WebKit */
+        }
+
+        /* Supprimer le flou sur le contenu principal (texte, graphiques, etc.) */
+        .stApp > div {
+            filter: none;
         }
 
         /* Améliorer la lisibilité du texte */
         .stText, .stMarkdown, .stDataFrame, .stSubheader, .stHeader, .stButton, .stFormLabel, .stSelectbox, .stMultiselect {
             color: #f0f0f0 !important;  /* Couleur claire pour le texte */
-        }
-
-        /* Appliquer un léger flou sur le fond pour un meilleur contraste */
-        .stApp {
-            filter: blur(3px); /* Applique un flou léger sur l'arrière-plan */
-        }
-
-        /* Supprimer le flou derrière le contenu pour que le texte reste net */
-        .stApp > div {
-            filter: none;
         }
 
         /* Améliorer le contraste du texte dans les widgets */
