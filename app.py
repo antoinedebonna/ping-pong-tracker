@@ -34,33 +34,42 @@ worksheet = authenticate_gspread()
 # Interface principale
 st.title("Suivi des matchs de Ping-Pong")
 
-# Filtres pour le camembert
+# Filtres pour les graphiques et le tableau
 st.subheader("Filtres")
 selected_years = st.multiselect("Sélectionnez une ou plusieurs années", sorted(data["Date"].str[:4].dropna().unique(), reverse=True))
 selected_terrains = st.multiselect("Sélectionnez un ou plusieurs terrains", data["Terrain"].dropna().unique())
 
 # Filtrage des données
-filtered_data = data[data["Date"].str[:4].isin(selected_years) & data["Terrain"].isin(selected_terrains)]
-st.write("Nombre de lignes après filtrage :", len(filtered_data))
+data_filtered = data[data["Date"].str[:4].isin(selected_years) & data["Terrain"].isin(selected_terrains)]
+data_filtered = data_filtered.sort_values(by="Date").reset_index(drop=True)
+data_filtered["Match #"] = range(1, len(data_filtered) + 1)
+
+st.write("Nombre de lignes après filtrage :", len(data_filtered))
 
 # Statistiques avec camembert (nombre de victoires)
-if not filtered_data.empty:
-    win_counts = filtered_data.groupby(["Joueur", "Résultat"]).size().unstack(fill_value=0)
+if not data_filtered.empty:
+    win_counts = data_filtered.groupby(["Joueur", "Résultat"]).size().unstack(fill_value=0)
     
-    if not win_counts.empty:
-        if "✅ V" in win_counts.columns:
-            win_counts = win_counts["✅ V"]  # Ne prendre que les victoires
-        else:
-            win_counts = pd.Series(0, index=win_counts.index)  # Cas où aucune victoire n'est trouvée
-        
-        fig = px.pie(win_counts, values=win_counts.values, names=win_counts.index, 
-                     title="Nombre de victoires par joueur", hole=0.3)
-
-        st.plotly_chart(fig, key="win_chart")
+    if "✅ V" in win_counts.columns:
+        win_counts = win_counts["✅ V"]
     else:
-        st.warning("Aucune victoire détectée pour ce filtre.")
+        win_counts = pd.Series(0, index=win_counts.index)
+    
+    fig_pie = px.pie(win_counts, values=win_counts.values, names=win_counts.index, 
+                      title="Nombre de victoires par joueur", hole=0.3)
+    st.plotly_chart(fig_pie, key="win_chart")
 else:
     st.warning("Aucune donnée trouvée pour les filtres sélectionnés.")
+
+# Graphique d'évolution des victoires
+data_victories = data_filtered[data_filtered["Résultat"] == "✅ V"].copy()
+data_victories["Cumulative Wins"] = data_victories.groupby("Joueur").cumcount() + 1
+
+if not data_victories.empty:
+    fig_line = px.line(data_victories, x="Match #", y="Cumulative Wins", color="Joueur",
+                       title="Évolution du nombre de victoires par joueur",
+                       markers=True)
+    st.plotly_chart(fig_line, key="evolution_victoires")
 
 # Formulaire d'ajout de match
 st.subheader("Ajouter un match")
@@ -91,7 +100,8 @@ with st.form("add_match_form"):
         worksheet.append_row([str(date), terrain, "Antoine", result_antoine] + [s[0] for s in set_scores] + [score_antoine, remarks])
         worksheet.append_row([str(date), terrain, "Clément", result_clement] + [s[1] for s in set_scores] + [score_clement, ""])
         st.success("Match ajouté !")
-st.dataframe(filtered_data)  # Afficher le tableau filtré
+
+st.dataframe(data_filtered)  # Afficher le tableau filtré
 
 # Suppression d'un match
 st.subheader("Supprimer un match")
@@ -105,8 +115,8 @@ if st.button("Supprimer"):
     rows = all_values[1:]
     
     indexes_to_delete = []
-    for i, row in enumerate(rows, start=2):  # Start at 2 to match Google Sheets row numbers
-        if row[0] == selected_date and row[2] in ["Antoine", "Clément"]:  # Supprime les deux lignes du match
+    for i, row in enumerate(rows, start=2):
+        if row[0] == selected_date and row[2] in ["Antoine", "Clément"]:
             indexes_to_delete.append(i)
     
     if indexes_to_delete:
