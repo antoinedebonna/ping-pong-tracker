@@ -62,21 +62,6 @@ if not filtered_data.empty:
 else:
     st.warning("Aucune donnée trouvée pour les filtres sélectionnés.")
 
-# Graphique en ligne (évolution des victoires)
-if not filtered_data.empty:
-    filtered_data = filtered_data.sort_values("Date").reset_index(drop=True)
-    filtered_data["Match_Numero"] = range(1, (len(filtered_data) // 2) + 1)
-    
-    # Calculer le cumul des victoires
-    cumulative_wins = filtered_data.copy()
-    cumulative_wins["Victoire_Cumul"] = cumulative_wins.groupby("Joueur")["Résultat"].transform(lambda x: (x == "✅ V").astype(int).cumsum())
-
-    
-    fig_line = px.line(cumulative_wins, x="Match_Numero", y="Victoire_Cumul", color="Joueur", markers=True,
-                        title="Évolution des victoires par joueur",
-                        labels={"Match_Numero": "Numéro du match", "Victoire_Cumul": "Total de victoires cumulées"})
-    st.plotly_chart(fig_line, key="win_evolution")
-
 # Formulaire d'ajout de match
 st.subheader("Ajouter un match")
 with st.form("add_match_form"):
@@ -103,10 +88,8 @@ with st.form("add_match_form"):
         result_antoine = "✅ V" if score_antoine > score_clement else "❌ D"
         result_clement = "✅ V" if score_clement > score_antoine else "❌ D"
         
-        row_data = [str(date), terrain, "Antoine", result_antoine] + [s[0] for s in set_scores] + [score_antoine, remarks]
-        worksheet.append_row(row_data)
-        row_data = ["", terrain, "Clément", result_clement] + [s[1] for s in set_scores] + [score_clement, ""]
-        worksheet.append_row(row_data)
+        worksheet.append_row([str(date), terrain, "Antoine", result_antoine] + [s[0] for s in set_scores] + [score_antoine, remarks])
+        worksheet.append_row([str(date), terrain, "Clément", result_clement] + [s[1] for s in set_scores] + [score_clement, ""])
         st.success("Match ajouté !")
 st.dataframe(filtered_data)  # Afficher le tableau filtré
 
@@ -121,14 +104,14 @@ if st.button("Supprimer"):
     headers = all_values[0]
     rows = all_values[1:]
     
-    index_to_delete = None
+    indexes_to_delete = []
     for i, row in enumerate(rows, start=2):  # Start at 2 to match Google Sheets row numbers
-        if row[0] == selected_date and row[2] == selected_joueur:  # Colonne Date et Joueur
-            index_to_delete = i
-            break
+        if row[0] == selected_date and row[2] in ["Antoine", "Clément"]:  # Supprime les deux lignes du match
+            indexes_to_delete.append(i)
     
-    if index_to_delete:
-        worksheet.delete_rows(index_to_delete)
+    if indexes_to_delete:
+        for i in reversed(indexes_to_delete):
+            worksheet.delete_rows(i)
         st.success("Match supprimé !")
     else:
         st.warning("Match non trouvé.")
