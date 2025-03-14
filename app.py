@@ -68,7 +68,11 @@ with tab1:
         st.plotly_chart(fig_line)
 
     # 📋 Affichage du tableau des matchs filtrés avec le numéro de match en 1ère colonne
-    data_filtered_display = data_filtered[["Match #", "Date", "Terrain", "Joueur", "Résultat"]]
+
+    set_columns = [f"Set {i+1}" for i in range(5)]  # Génération des colonnes de sets
+    columns_to_display = ["Match #", "Date", "Terrain", "Joueur", "Résultat"] + set_columns  # Ajout des sets
+    
+    data_filtered_display = data_filtered[columns_to_display]
     st.dataframe(data_filtered_display.set_index("Match #"))
 
     # 🗑️ Suppression d'un match (cachée sous un menu déroulant)
