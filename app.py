@@ -9,7 +9,7 @@ st.markdown(
     """
     <style>
         body {
-            background-image: url("https://images.unsplash.com/photo-1685495856559-5d96a0e51acb");
+            background-image: url("https://i.pinimg.com/736x/2f/b8/bc/2fb8bca72f5f2433546398fcc83eaa3a.jpg");
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
