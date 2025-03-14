@@ -5,6 +5,7 @@ from datetime import datetime
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
+st.set_page_config(layout="wide")
 # URL d'export CSV de Google Sheets
 CSV_URL = "https://docs.google.com/spreadsheets/d/1S9mBu7_hSwSb0JQH-jAQNRUlOWQho6HcGoLJ8B0QjaI/export?format=csv"
 
