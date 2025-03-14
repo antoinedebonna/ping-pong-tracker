@@ -46,7 +46,7 @@ with tab1:
     # Filtrage des données
     data_filtered = data[data["Date"].str[:4].isin(selected_years) & data["Terrain"].isin(selected_terrains)]
     data_filtered = data_filtered.sort_values(by="Date").reset_index(drop=True)
-    data_filtered["Match #"] = (data_filtered.index // 2) + 1
+    data_filtered["Match #"] = (data_filtered.index // 2) + 1  # Numérotation des matchs
 
     st.write(f"Nombre de matchs après filtrage : {len(data_filtered) // 2}")
 
@@ -66,10 +66,11 @@ with tab1:
         fig_line = px.line(data_victories, x="Match #", y="Cumulative Wins", color="Joueur", title="Évolution du nombre de victoires par joueur", markers=True)
         st.plotly_chart(fig_line)
 
-    # 📋 Affichage du tableau des matchs filtrés
-    st.dataframe(data_filtered)
+    # 📋 Affichage du tableau des matchs filtrés avec le numéro de match en 1ère colonne
+    data_filtered_display = data_filtered[["Match #", "Date", "Terrain", "Joueur", "Résultat"]]
+    st.dataframe(data_filtered_display.set_index("Match #"))
 
-    # 🗑️ Suppression d'un match (caché par défaut)
+    # 🗑️ Suppression d'un match (cachée sous un menu déroulant)
     with st.expander("🗑️ Supprimer un match"):
         selected_match = st.selectbox("Sélectionnez le numéro du match à supprimer", sorted(data_filtered["Match #"].unique()))
 
