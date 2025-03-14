@@ -55,6 +55,10 @@ if not filtered_data.empty:
 else:
     st.warning("Aucune donnée trouvée pour les filtres sélectionnés.")
 
+# Affichage des matchs filtrés
+st.subheader("Historique des matchs")
+st.dataframe(filtered_data[["Date", "Terrain", "Joueur", "Résultat", "Set 1", "Set 2", "Set 3", "Set 4", "Set 5", "Total", "Remarques"]])
+
 # Formulaire d'ajout de match
 st.subheader("Ajouter un match")
 with st.form("add_match_form"):
@@ -86,10 +90,6 @@ with st.form("add_match_form"):
         row_data = ["", terrain, "Clément", result_clement] + [s[1] for s in set_scores] + [score_clement, ""]
         worksheet.append_row(row_data)
         st.success("Match ajouté !")
-
-# Affichage des matchs formaté avec la colonne "Terrain" et "Résultat"
-st.subheader("Historique des matchs")
-st.dataframe(data[["Date", "Terrain", "Joueur", "Résultat", "Set 1", "Set 2", "Set 3", "Set 4", "Set 5", "Total", "Remarques"]])
 
 # Suppression d'un match
 st.subheader("Supprimer un match")
