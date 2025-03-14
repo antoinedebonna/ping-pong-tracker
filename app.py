@@ -107,9 +107,7 @@ st.dataframe(data_filtered)  # Afficher le tableau filtré
 
 # Suppression d'un match
 st.subheader("Supprimer un match")
-dates = data["Date"].unique()
-selected_date = st.selectbox("Sélectionnez la date du match à supprimer", dates)
-selected_joueur = st.selectbox("Sélectionnez le joueur", data[data["Date"] == selected_date]["Joueur"].unique())
+selected_match = st.selectbox("Sélectionnez le numéro du match à supprimer", sorted(data_filtered["Match #"].unique()))
 
 if st.button("Supprimer"):
     all_values = worksheet.get_all_values()
@@ -118,7 +116,7 @@ if st.button("Supprimer"):
     
     indexes_to_delete = []
     for i, row in enumerate(rows, start=2):
-        if row[0] == selected_date and row[2] in ["Antoine", "Clément"]:
+        if int(i // 2) + 1 == selected_match:
             indexes_to_delete.append(i)
     
     if indexes_to_delete:
