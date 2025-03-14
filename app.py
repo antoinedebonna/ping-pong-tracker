@@ -42,7 +42,9 @@ selected_terrains = st.multiselect("Sélectionnez un ou plusieurs terrains", dat
 # Filtrage des données
 data_filtered = data[data["Date"].str[:4].isin(selected_years) & data["Terrain"].isin(selected_terrains)]
 data_filtered = data_filtered.sort_values(by="Date").reset_index(drop=True)
-data_filtered["Match #"] = range(1, len(data_filtered) + 1)
+
+# Ajouter une colonne "Match #" qui attribue le même numéro aux deux lignes d'un match
+data_filtered["Match #"] = (data_filtered.index // 2) + 1
 
 st.write("Nombre de lignes après filtrage :", len(data_filtered))
 
