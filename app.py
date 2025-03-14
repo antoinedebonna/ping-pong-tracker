@@ -12,7 +12,8 @@ CSV_URL = "https://docs.google.com/spreadsheets/d/1S9mBu7_hSwSb0JQH-jAQNRUlOWQho
 
 def load_data():
     data = pd.read_csv(CSV_URL)
-    data["Date"] = data["Date"].astype(str).dropna()
+    data["Date"].fillna(method='ffill', inplace=True)  # Remplir les NaN avec la valeur précédente
+    data["Date"] = data["Date"].astype(str)
     data["Terrain"] = data["Terrain"].astype(str).fillna("Inconnu")
     return data
 
@@ -57,15 +58,16 @@ else:
 
 # Graphique en ligne (évolution des victoires)
 if not filtered_data.empty:
-    filtered_data = filtered_data.sort_values("Date").reset_index()
+    filtered_data = filtered_data.sort_values("Date").reset_index(drop=True)
     filtered_data["Match_Numero"] = range(1, len(filtered_data) + 1)
     
-    cumulative_wins = filtered_data.groupby(["Joueur", "Match_Numero"])\
-        ["Résultat"].apply(lambda x: (x == "✅ V").cumsum()).reset_index()
+    # Calculer le cumul des victoires
+    cumulative_wins = filtered_data.copy()
+    cumulative_wins["Victoire_Cumul"] = cumulative_wins.groupby("Joueur")["Résultat"].apply(lambda x: (x == "✅ V").cumsum())
     
-    fig_line = px.line(cumulative_wins, x="Match_Numero", y="Résultat", color="Joueur", markers=True,
+    fig_line = px.line(cumulative_wins, x="Match_Numero", y="Victoire_Cumul", color="Joueur", markers=True,
                         title="Évolution des victoires par joueur",
-                        labels={"Match_Numero": "Numéro du match", "Résultat": "Total de victoires cumulées"})
+                        labels={"Match_Numero": "Numéro du match", "Victoire_Cumul": "Total de victoires cumulées"})
     st.plotly_chart(fig_line, key="win_evolution")
 
 # Formulaire d'ajout de match
