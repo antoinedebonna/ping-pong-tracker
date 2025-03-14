@@ -71,6 +71,7 @@ if not filtered_data.empty:
         filtered_data["Match_Numero"] = match_numbers * 2
 
 
+
     else:
         st.warning("Les données n'ont pas de colonne 'Date' valide.")
 
