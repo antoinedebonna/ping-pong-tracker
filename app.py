@@ -48,8 +48,14 @@ if not filtered_data.empty:
     win_counts = filtered_data.groupby(["Joueur", "Résultat"]).size().unstack(fill_value=0)
     
     if not win_counts.empty:
-        fig = px.pie(win_counts.sum(axis=1), values=win_counts.sum(axis=1).values, names=win_counts.index, 
+        if "✅ V" in win_counts.columns:
+            win_counts = win_counts["✅ V"]  # Ne prendre que les victoires
+        else:
+            win_counts = pd.Series(0, index=win_counts.index)  # Cas où aucune victoire n'est trouvée
+        
+        fig = px.pie(win_counts, values=win_counts.values, names=win_counts.index, 
                      title="Nombre de victoires par joueur", hole=0.3)
+
         st.plotly_chart(fig, key="win_chart")
     else:
         st.warning("Aucune victoire détectée pour ce filtre.")
@@ -63,7 +69,8 @@ if not filtered_data.empty:
     
     # Calculer le cumul des victoires
     cumulative_wins = filtered_data.copy()
-    cumulative_wins["Victoire_Cumul"] = cumulative_wins.groupby("Joueur")["Résultat"].apply(lambda x: (x == "✅ V").cumsum())
+    cumulative_wins["Victoire_Cumul"] = cumulative_wins.groupby("Joueur")["Résultat"].transform(lambda x: (x == "✅ V").astype(int).cumsum())
+
     
     fig_line = px.line(cumulative_wins, x="Match_Numero", y="Victoire_Cumul", color="Joueur", markers=True,
                         title="Évolution des victoires par joueur",
@@ -101,6 +108,7 @@ with st.form("add_match_form"):
         row_data = ["", terrain, "Clément", result_clement] + [s[1] for s in set_scores] + [score_clement, ""]
         worksheet.append_row(row_data)
         st.success("Match ajouté !")
+st.dataframe(filtered_data)  # Afficher le tableau filtré
 
 # Suppression d'un match
 st.subheader("Supprimer un match")
