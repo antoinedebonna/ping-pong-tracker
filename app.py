@@ -67,10 +67,29 @@ st.markdown(
             padding: 8px;
             text-align: center;
         }
+
+        /* Bordures plus marquées autour des matches */
+        .stDataFrame td {
+            border-right: 2px solid #ddd;
+        }
+        .stDataFrame tr:last-child td {
+            border-bottom: 2px solid #ddd;
+        }
+
+        /* Ajouter des coins arrondis aux graphiques */
+        .plotly-graph-div {
+            border-radius: 15px;  /* Coins arrondis */
+            border: 2px solid #ddd;  /* Bordure autour du graphique */
+            padding: 10px;  /* Ajout d'un peu de padding autour du graphique */
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);  /* Ombre pour un effet de relief */
+        }
+
     </style>
     """,
     unsafe_allow_html=True
 )
+
+# Ton code continue ici...
 
 
 
