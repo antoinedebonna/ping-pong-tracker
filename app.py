@@ -57,15 +57,15 @@ else:
 
 # Graphique en ligne (évolution des victoires)
 if not filtered_data.empty:
-    filtered_data = filtered_data.sort_values("Date").reset_index(drop=True)
+    filtered_data = filtered_data.sort_values("Date").reset_index()
     filtered_data["Match_Numero"] = range(1, len(filtered_data) + 1)
     
-    cumulative_wins = filtered_data.groupby("Joueur")["Résultat"].apply(lambda x: (x == "✅ V").cumsum()).reset_index()
-    cumulative_wins = filtered_data.merge(cumulative_wins, on=["Match_Numero", "Joueur"], how="left")
+    cumulative_wins = filtered_data.groupby(["Joueur", "Match_Numero"])\
+        ["Résultat"].apply(lambda x: (x == "✅ V").cumsum()).reset_index()
     
-    fig_line = px.line(cumulative_wins, x="Match_Numero", y="Résultat_y", color="Joueur", markers=True,
+    fig_line = px.line(cumulative_wins, x="Match_Numero", y="Résultat", color="Joueur", markers=True,
                         title="Évolution des victoires par joueur",
-                        labels={"Match_Numero": "Numéro du match", "Résultat_y": "Total de victoires cumulées"})
+                        labels={"Match_Numero": "Numéro du match", "Résultat": "Total de victoires cumulées"})
     st.plotly_chart(fig_line, key="win_evolution")
 
 # Formulaire d'ajout de match
