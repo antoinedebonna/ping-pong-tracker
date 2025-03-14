@@ -42,21 +42,14 @@ selected_terrains = st.multiselect("Sélectionnez un ou plusieurs terrains", dat
 # Filtrage des données
 filtered_data = data[data["Date"].str[:4].isin(selected_years) & data["Terrain"].isin(selected_terrains)]
 st.write("Nombre de lignes après filtrage :", len(filtered_data))
-st.dataframe(filtered_data)  # Afficher le tableau filtré
 
 # Statistiques avec camembert (nombre de victoires)
 if not filtered_data.empty:
     win_counts = filtered_data.groupby(["Joueur", "Résultat"]).size().unstack(fill_value=0)
     
     if not win_counts.empty:
-        if "✅ V" in win_counts.columns:
-            win_counts = win_counts["✅ V"]  # Ne prendre que les victoires
-        else:
-            win_counts = pd.Series(0, index=win_counts.index)  # Cas où aucune victoire n'est trouvée
-        
-        fig = px.pie(win_counts, values=win_counts.values, names=win_counts.index, 
+        fig = px.pie(win_counts.sum(axis=1), values=win_counts.sum(axis=1).values, names=win_counts.index, 
                      title="Nombre de victoires par joueur", hole=0.3)
-
         st.plotly_chart(fig, key="win_chart")
     else:
         st.warning("Aucune victoire détectée pour ce filtre.")
@@ -65,22 +58,12 @@ else:
 
 # Graphique en ligne (évolution des victoires)
 if not filtered_data.empty:
-    if "Date" in filtered_data.columns and not filtered_data["Date"].isnull().all():
-        filtered_data = filtered_data.sort_values("Date").reset_index(drop=True)
-        match_numbers = list(range(1, (len(filtered_data) // 2) + 1))
-        filtered_data["Match_Numero"] = match_numbers * 2
-
-
-
-    else:
-        st.warning("Les données n'ont pas de colonne 'Date' valide.")
-
+    filtered_data = filtered_data.sort_values("Date").reset_index(drop=True)
+    filtered_data["Match_Numero"] = range(1, (len(filtered_data) // 2) + 1)
     
     # Calculer le cumul des victoires
     cumulative_wins = filtered_data.copy()
-    cumulative_wins["Victoire_Cumul"] = cumulative_wins.groupby("Joueur")["Résultat"].transform(lambda x: (x == "✅ V").astype(int).cumsum())
-
-
+    cumulative_wins["Victoire_Cumul"] = cumulative_wins.groupby("Joueur")["Résultat"].apply(lambda x: (x == "✅ V").cumsum())
     
     fig_line = px.line(cumulative_wins, x="Match_Numero", y="Victoire_Cumul", color="Joueur", markers=True,
                         title="Évolution des victoires par joueur",
