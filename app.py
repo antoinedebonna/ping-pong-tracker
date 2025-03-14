@@ -67,7 +67,7 @@ if not filtered_data.empty:
     filtered_data = filtered_data.sort_values("Date").reset_index(drop=True)
 
     # Création correcte des numéros de match (chaque match a deux lignes)
-    match_numbers = list(range(1, (len(filtered_data) // 2) + 1)) * 2
+    match_numbers = list(range(1, (len(filtered_data) // 2) + 1)) 
     match_numbers = match_numbers[:len(filtered_data)]  # Ajustement taille
     filtered_data["Match_Numero"] = match_numbers
 
