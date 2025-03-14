@@ -48,8 +48,14 @@ if not filtered_data.empty:
     win_counts = filtered_data.groupby(["Joueur", "Résultat"]).size().unstack(fill_value=0)
     
     if not win_counts.empty:
-        fig = px.pie(win_counts.sum(axis=1), values=win_counts.sum(axis=1).values, names=win_counts.index, 
+        if "✅ V" in win_counts.columns:
+            win_counts = win_counts["✅ V"]  # Ne prendre que les victoires
+        else:
+            win_counts = pd.Series(0, index=win_counts.index)  # Cas où aucune victoire n'est trouvée
+        
+        fig = px.pie(win_counts, values=win_counts.values, names=win_counts.index, 
                      title="Nombre de victoires par joueur", hole=0.3)
+
         st.plotly_chart(fig, key="win_chart")
     else:
         st.warning("Aucune victoire détectée pour ce filtre.")
