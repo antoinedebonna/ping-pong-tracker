@@ -168,20 +168,20 @@ with tab1:
         fig_pie.update_layout(
             title="",
             annotations=[
-                # Annotation pour Antoine à gauche
+                # Annotation pour Antoine à l'extrémité gauche
                 dict(
-                    x=0.25,  # Positionnement à gauche
-                    y=0.5,  # Centré verticalement
-                    text="<b>Antoine</b>",  # Nom d'Antoine
-                    font=dict(size=40, color="white"),  # Grande taille de texte, couleur blanche
+                    x=0.1,  # Positionnement à l'extrémité gauche
+                    y=0.7,  # Plus haut dans la section
+                    text=f"<b>Antoine</b><br>{victories_antoine} victoires",  # Nom d'Antoine et son nombre de victoires
+                    font=dict(size=30, color="black"),  # Grande taille de texte et couleur noire
                     showarrow=False
                 ),
-                # Annotation pour Clément à droite
+                # Annotation pour Clément à l'extrémité droite
                 dict(
-                    x=0.75,  # Positionnement à droite
-                    y=0.5,  # Centré verticalement
-                    text="<b>Clément</b>",  # Nom de Clément
-                    font=dict(size=40, color="white"),  # Grande taille de texte, couleur blanche
+                    x=0.9,  # Positionnement à l'extrémité droite
+                    y=0.7,  # Plus haut dans la section
+                    text=f"<b>Clément</b><br>{victories_clement} victoires",  # Nom de Clément et son nombre de victoires
+                    font=dict(size=30, color="black"),  # Grande taille de texte et couleur noire
                     showarrow=False
                 ),
             ],
@@ -192,6 +192,7 @@ with tab1:
         )
     
         st.plotly_chart(fig_pie)
+
 
 
 
