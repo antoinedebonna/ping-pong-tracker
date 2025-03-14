@@ -61,9 +61,9 @@ with st.form("add_match_form"):
         result_antoine = "✅ V" if score_antoine > score_clement else "❌ D"
         result_clement = "✅ V" if score_clement > score_antoine else "❌ D"
         
-        row_data = [str(date), terrain, "Antoine"] + [s[0] for s in set_scores] + [score_antoine, result_antoine, remarks]
+        row_data = [str(date), terrain, "Antoine", result_antoine] + [s[0] for s in set_scores] + [score_antoine, remarks]
         worksheet.append_row(row_data)
-        row_data = ["", terrain, "Clément"] + [s[1] for s in set_scores] + [score_clement, result_clement, ""]
+        row_data = ["", terrain, "Clément", result_clement] + [s[1] for s in set_scores] + [score_clement, ""]
         worksheet.append_row(row_data)
         st.success("Match ajouté !")
 
