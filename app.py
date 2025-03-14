@@ -59,22 +59,16 @@ else:
 # Graphique en ligne (évolution des victoires)
 if not filtered_data.empty:
     filtered_data = filtered_data.sort_values("Date").reset_index(drop=True)
-
-    # Création correcte des numéros de match (chaque match a deux lignes)
-    match_numbers = list(range(1, (len(filtered_data) // 2) + 1)) * 2
-    match_numbers = match_numbers[:len(filtered_data)]  # Ajustement taille
-    filtered_data["Match_Numero"] = match_numbers
-
-    # Calcul du cumul des victoires uniquement pour les victoires (✅ V)
+    filtered_data["Match_Numero"] = range(1, (len(filtered_data) // 2) + 1)
+    
+    # Calculer le cumul des victoires
     cumulative_wins = filtered_data.copy()
     cumulative_wins["Victoire_Cumul"] = cumulative_wins.groupby("Joueur")["Résultat"].apply(lambda x: (x == "✅ V").cumsum())
-
-    # Création du graphique avec Plotly
+    
     fig_line = px.line(cumulative_wins, x="Match_Numero", y="Victoire_Cumul", color="Joueur", markers=True,
                         title="Évolution des victoires par joueur",
                         labels={"Match_Numero": "Numéro du match", "Victoire_Cumul": "Total de victoires cumulées"})
     st.plotly_chart(fig_line, key="win_evolution")
-
 
 # Formulaire d'ajout de match
 st.subheader("Ajouter un match")
