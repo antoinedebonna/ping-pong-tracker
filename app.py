@@ -63,7 +63,8 @@ if not filtered_data.empty:
     
     # Calculer le cumul des victoires
     cumulative_wins = filtered_data.copy()
-    cumulative_wins["Victoire_Cumul"] = cumulative_wins.groupby("Joueur")["Résultat"].apply(lambda x: (x == "✅ V").cumsum())
+    cumulative_wins["Victoire_Cumul"] = cumulative_wins.groupby("Joueur")["Résultat"].transform(lambda x: (x == "✅ V").astype(int).cumsum())
+
     
     fig_line = px.line(cumulative_wins, x="Match_Numero", y="Victoire_Cumul", color="Joueur", markers=True,
                         title="Évolution des victoires par joueur",
