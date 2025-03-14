@@ -139,7 +139,7 @@ with tab1:
     data_filtered["Match #"] = (data_filtered.index // 2) + 1  # Numérotation des matchs
 
 
-
+    
     # 📊 Graphique des victoires avec annotations
     if not data_filtered.empty:
         win_counts = data_filtered.groupby(["Joueur", "Résultat"]).size().unstack(fill_value=0)
@@ -150,7 +150,12 @@ with tab1:
         victories_clement = win_counts.get("Clément", 0)
     
         # Créer un graphique camembert avec Plotly
-        fig_pie = px.pie(win_counts, values=win_counts.values, names=win_counts.index, title="Nombre de victoires par joueur", hole=0.3)
+        fig_pie = px.pie(
+            win_counts, 
+            values=win_counts.values, 
+            names=win_counts.index, 
+            hole=0.3
+        )
     
         # Organiser le graphique pour mettre Antoine à gauche et Clément à droite
         fig_pie.update_traces(
@@ -161,21 +166,22 @@ with tab1:
     
         # Ajouter des annotations pour les nombres de victoires
         fig_pie.update_layout(
+            title="",
             annotations=[
                 # Annotation pour Antoine à gauche
                 dict(
                     x=0.25,  # Positionnement à gauche
                     y=0.5,  # Centré verticalement
-                    text=f"<b>{victories_antoine}</b>",  # Nombre de victoires d'Antoine
-                    font=dict(size=40, color="black"),  # Grande taille de texte, couleur blanche
+                    text="<b>Antoine</b>",  # Nom d'Antoine
+                    font=dict(size=40, color="white"),  # Grande taille de texte, couleur blanche
                     showarrow=False
                 ),
                 # Annotation pour Clément à droite
                 dict(
                     x=0.75,  # Positionnement à droite
                     y=0.5,  # Centré verticalement
-                    text=f"<b>{victories_clement}</b>",  # Nombre de victoires de Clément
-                    font=dict(size=40, color="black"),  # Grande taille de texte, couleur blanche
+                    text="<b>Clément</b>",  # Nom de Clément
+                    font=dict(size=40, color="white"),  # Grande taille de texte, couleur blanche
                     showarrow=False
                 ),
             ],
@@ -186,6 +192,7 @@ with tab1:
         )
     
         st.plotly_chart(fig_pie)
+
 
 
 
