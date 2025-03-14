@@ -8,6 +8,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 st.markdown(
     """
     <style>
+        /* Ajouter un fond d'écran avec une teinte sombre pour améliorer la lisibilité */
         body {
             background-image: url("https://i.pinimg.com/736x/2f/b8/bc/2fb8bca72f5f2433546398fcc83eaa3a.jpg");
             background-size: cover;
@@ -15,13 +16,36 @@ st.markdown(
             background-attachment: fixed;
         }
 
+        /* Appliquer une couche semi-transparente noire sur l'image de fond */
         .stApp {
-            background: transparent;
+            background: rgba(0, 0, 0, 0.5); /* 50% noir transparent */
+        }
+
+        /* Améliorer la lisibilité du texte */
+        .stText, .stMarkdown, .stDataFrame, .stSubheader, .stHeader, .stButton, .stFormLabel, .stSelectbox, .stMultiselect {
+            color: #f0f0f0 !important;  /* Couleur claire pour le texte */
+        }
+
+        /* Appliquer un léger flou sur le fond pour un meilleur contraste */
+        .stApp {
+            filter: blur(3px); /* Applique un flou léger sur l'arrière-plan */
+        }
+
+        /* Supprimer le flou derrière le contenu pour que le texte reste net */
+        .stApp > div {
+            filter: none;
+        }
+
+        /* Améliorer le contraste du texte dans les widgets */
+        .stSelectbox, .stMultiselect, .stTextInput, .stTextArea, .stNumberInput {
+            background-color: rgba(255, 255, 255, 0.7); /* Fond blanc semi-transparent pour les champs de saisie */
+            color: #333;  /* Couleur du texte des champs de saisie */
         }
     </style>
     """,
     unsafe_allow_html=True
 )
+
 
 
 
