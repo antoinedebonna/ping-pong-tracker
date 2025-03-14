@@ -8,7 +8,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 st.markdown(
     """
     <style>
-        /* Ajouter un fond d'écran sans flou */
+        /* Ajouter un fond d'écran avec une teinte sombre pour améliorer la lisibilité */
         body {
             background-image: url("https://i.pinimg.com/736x/2f/b8/bc/2fb8bca72f5f2433546398fcc83eaa3a.jpg");
             background-size: cover;
@@ -48,10 +48,30 @@ st.markdown(
             background-color: rgba(255, 255, 255, 0.7); /* Fond blanc semi-transparent pour les champs de saisie */
             color: #333;  /* Couleur du texte des champs de saisie */
         }
+
+        /* Ajouter des bordures aux cellules du tableau */
+        .stDataFrame table, .stDataFrame th, .stDataFrame td {
+            border: 1px solid #ddd; /* Bordure légère autour de chaque cellule */
+            border-collapse: collapse; /* Assure que les bordures sont unies */
+        }
+
+        /* Bordure plus marquée pour les titres de colonnes */
+        .stDataFrame th {
+            background-color: #3e3e3e;
+            color: #fff;
+            text-align: center;
+        }
+
+        /* Ajouter un padding pour rendre le tableau plus lisible */
+        .stDataFrame td {
+            padding: 8px;
+            text-align: center;
+        }
     </style>
     """,
     unsafe_allow_html=True
 )
+
 
 
 
@@ -99,7 +119,7 @@ with tab1:
     data_filtered = data_filtered.sort_values(by="Date").reset_index(drop=True)
     data_filtered["Match #"] = (data_filtered.index // 2) + 1  # Numérotation des matchs
 
-    st.write(f"Nombre de matchs après filtrage : {len(data_filtered) // 2}")
+
 
     # 📊 Graphique des victoires
     if not data_filtered.empty:
