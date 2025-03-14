@@ -36,8 +36,11 @@ st.title("Suivi des matchs de Ping-Pong")
 
 # Filtres pour les graphiques et le tableau
 st.subheader("Filtres")
-selected_years = st.multiselect("Sélectionnez une ou plusieurs années", sorted(data["Date"].str[:4].dropna().unique(), reverse=True))
-selected_terrains = st.multiselect("Sélectionnez un ou plusieurs terrains", data["Terrain"].dropna().unique())
+available_years = sorted(data["Date"].str[:4].dropna().unique(), reverse=True)
+available_terrains = data["Terrain"].dropna().unique()
+
+selected_years = st.multiselect("Sélectionnez une ou plusieurs années", available_years, default=available_years)
+selected_terrains = st.multiselect("Sélectionnez un ou plusieurs terrains", available_terrains, default=available_terrains)
 
 # Filtrage des données
 data_filtered = data[data["Date"].str[:4].isin(selected_years) & data["Terrain"].isin(selected_terrains)]
