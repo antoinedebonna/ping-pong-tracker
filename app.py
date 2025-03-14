@@ -116,15 +116,23 @@ if st.button("Supprimer"):
     all_values = worksheet.get_all_values()
     headers = all_values[0]
     rows = all_values[1:]
-    
+
+    # Trouver les index des lignes correspondant au match sélectionné
     indexes_to_delete = []
-    for i, row in enumerate(rows, start=2):
-        if int(i // 2) + 1 == selected_match:
-            indexes_to_delete.append(i)
-    
+    match_number = int(selected_match)
+
+    current_match_number = 1  # Numéro de match en parcourant les lignes
+    for i in range(len(rows)):
+        if i % 2 == 0:  # On ne compte qu'une ligne sur deux pour identifier les matchs
+            if current_match_number == match_number:
+                indexes_to_delete.extend([i + 2, i + 3])  # Les lignes de Google Sheets commencent à 1
+                break  # On s'arrête dès qu'on a trouvé le match
+            current_match_number += 1  # Incrémentation du match
+
     if indexes_to_delete:
-        for i in reversed(indexes_to_delete):
+        for i in reversed(indexes_to_delete):  # Supprimer de la fin vers le début
             worksheet.delete_rows(i)
-        st.success("Match supprimé !")
+        st.success(f"Match {selected_match} supprimé !")
     else:
         st.warning("Match non trouvé.")
+
