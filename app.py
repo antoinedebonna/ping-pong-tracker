@@ -8,15 +8,13 @@ from oauth2client.service_account import ServiceAccountCredentials
 st.markdown(
     """
     <style>
-        /* Ajout d'un fond d'écran */
         body {
-            background-image: url("https://www.w3schools.com/w3images/fjords.jpg");
+            background-image: url("https://images.unsplash.com/photo-1685495856559-5d96a0e51acb");
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
         }
 
-        /* Rendre le fond du contenu transparent pour mieux voir l'image */
         .stApp {
             background: transparent;
         }
@@ -24,6 +22,7 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
 
 
 # URL d'export CSV de Google Sheets
