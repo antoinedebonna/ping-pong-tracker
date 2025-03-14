@@ -160,7 +160,7 @@ with tab1:
                     x=0.25,  # Positionnement à gauche
                     y=0.5,  # Centré verticalement
                     text=f"<b>{victories_antoine}</b>",  # Nombre de victoires d'Antoine
-                    font=dict(size=40, color="white"),  # Grande taille de texte, couleur blanche
+                    font=dict(size=40, color="black"),  # Grande taille de texte, couleur blanche
                     showarrow=False
                 ),
                 # Annotation pour Clément à droite
@@ -168,7 +168,7 @@ with tab1:
                     x=0.75,  # Positionnement à droite
                     y=0.5,  # Centré verticalement
                     text=f"<b>{victories_clement}</b>",  # Nombre de victoires de Clément
-                    font=dict(size=40, color="white"),  # Grande taille de texte, couleur blanche
+                    font=dict(size=40, color="black"),  # Grande taille de texte, couleur blanche
                     showarrow=False
                 ),
             ]
