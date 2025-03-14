@@ -86,6 +86,28 @@ with tab1:
     
     data_filtered_display = data_filtered[columns_to_display]
     st.dataframe(data_filtered_display.set_index("Match #"))
+    st.markdown("""
+        <style>
+            /* Réduit la largeur des colonnes spécifiques */
+            div[data-testid="stDataFrame"] th:nth-child(1),
+            div[data-testid="stDataFrame"] td:nth-child(1),
+            div[data-testid="stDataFrame"] th:nth-child(6),
+            div[data-testid="stDataFrame"] td:nth-child(6),
+            div[data-testid="stDataFrame"] th:nth-child(7),
+            div[data-testid="stDataFrame"] td:nth-child(7),
+            div[data-testid="stDataFrame"] th:nth-child(8),
+            div[data-testid="stDataFrame"] td:nth-child(8),
+            div[data-testid="stDataFrame"] th:nth-child(9),
+            div[data-testid="stDataFrame"] td:nth-child(9),
+            div[data-testid="stDataFrame"] th:nth-child(10),
+            div[data-testid="stDataFrame"] td:nth-child(10) {
+                min-width: 50px !important;  /* Ajuste la largeur minimale */
+                max-width: 50px !important;
+                text-align: center !important;
+            }
+        </style>
+    """, unsafe_allow_html=True)
+
 
     # 🗑️ Suppression d'un match (cachée sous un menu déroulant)
     with st.expander("🗑️ Supprimer un match"):
