@@ -32,7 +32,9 @@ st.title("Suivi des matchs de Ping-Pong")
 
 # Filtres pour le camembert
 st.subheader("Filtres")
-selected_year = st.selectbox("Sélectionnez une année", sorted(data["Date"].str[:4].unique(), reverse=True))
+data["Date"] = data["Date"].astype(str)  # Assurer que toutes les valeurs sont des chaînes
+selected_year = st.selectbox("Sélectionnez une année", sorted(data["Date"].str[:4].dropna().unique(), reverse=True))
+
 selected_terrain = st.selectbox("Sélectionnez un terrain", data["Terrain"].unique())
 
 filtered_data = data[(data["Date"].str.startswith(selected_year)) & (data["Terrain"] == selected_terrain)]
