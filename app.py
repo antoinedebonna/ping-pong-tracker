@@ -8,12 +8,13 @@ from oauth2client.service_account import ServiceAccountCredentials
 st.markdown(
     """
     <style>
-        /* Ajouter un fond d'écran avec une teinte sombre pour améliorer la lisibilité */
+        /* Ajouter un fond d'écran sans flou */
         body {
             background-image: url("https://i.pinimg.com/736x/2f/b8/bc/2fb8bca72f5f2433546398fcc83eaa3a.jpg");
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
+            filter: none; /* Pas de flou appliqué au fond */
         }
 
         /* Ajouter une couche semi-transparente noire sur l'image de fond */
@@ -22,14 +23,19 @@ st.markdown(
         }
 
         /* Appliquer un léger flou sur l'image de fond uniquement */
-        body {
-            filter: blur(5px); /* Applique un flou sur le fond */
-            -webkit-filter: blur(5px); /* Pour les navigateurs WebKit */
-        }
-
-        /* Supprimer le flou sur le contenu principal (texte, graphiques, etc.) */
-        .stApp > div {
-            filter: none;
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("https://i.pinimg.com/736x/2f/b8/bc/2fb8bca72f5f2433546398fcc83eaa3a.jpg");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            filter: blur(5px); /* Flou appliqué seulement sur l'image */
+            z-index: -1; /* S'assurer que l'image est derrière le contenu */
         }
 
         /* Améliorer la lisibilité du texte */
