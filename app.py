@@ -102,10 +102,6 @@ with st.form("add_match_form"):
         worksheet.append_row(row_data)
         st.success("Match ajouté !")
 
-# Affichage des matchs formaté avec la colonne "Terrain" et "Résultat"
-st.subheader("Historique des matchs")
-st.dataframe(filtered_data[["Date", "Terrain", "Joueur", "Résultat", "Set 1", "Set 2", "Set 3", "Set 4", "Set 5", "Total", "Remarques"]])
-
 # Suppression d'un match
 st.subheader("Supprimer un match")
 dates = data["Date"].unique()
@@ -113,10 +109,18 @@ selected_date = st.selectbox("Sélectionnez la date du match à supprimer", date
 selected_joueur = st.selectbox("Sélectionnez le joueur", data[data["Date"] == selected_date]["Joueur"].unique())
 
 if st.button("Supprimer"):
-    all_records = worksheet.get_all_records()
-    new_records = [record for record in all_records if not (record["Date"] == selected_date and record["Joueur"] == selected_joueur)]
-    worksheet.clear()
-    worksheet.append_row(list(all_records[0].keys()))  # Réécrire les en-têtes
-    for record in new_records:
-        worksheet.append_row(list(record.values()))
-    st.success("Match supprimé !")
+    all_values = worksheet.get_all_values()
+    headers = all_values[0]
+    rows = all_values[1:]
+    
+    index_to_delete = None
+    for i, row in enumerate(rows, start=2):  # Start at 2 to match Google Sheets row numbers
+        if row[0] == selected_date and row[2] == selected_joueur:  # Colonne Date et Joueur
+            index_to_delete = i
+            break
+    
+    if index_to_delete:
+        worksheet.delete_rows(index_to_delete)
+        st.success("Match supprimé !")
+    else:
+        st.warning("Match non trouvé.")
