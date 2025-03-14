@@ -67,7 +67,9 @@ else:
 if not filtered_data.empty:
     if "Date" in filtered_data.columns and not filtered_data["Date"].isnull().all():
         filtered_data = filtered_data.sort_values("Date").reset_index(drop=True)
-        filtered_data["Match_Numero"] = range(1, len(filtered_data) + 1)
+        filtered_data["Match_Numero"] = range(1, (len(filtered_data) // 2) + 1) * 2
+        filtered_data = filtered_data.sort_values("Match_Numero").reset_index(drop=True)
+
     else:
         st.warning("Les données n'ont pas de colonne 'Date' valide.")
 
