@@ -208,8 +208,12 @@ with tab1:
 
     # 📋 Affichage du tableau des matchs filtrés avec le numéro de match en 1ère colonne
 
+    # 📋 Affichage du tableau des matchs filtrés avec la colonne "Remarques"
     set_columns = [f"Set {i+1}" for i in range(5)]  # Génération des colonnes de sets
-    columns_to_display = ["Match #", "Date", "Terrain", "Joueur", "Résultat"] + set_columns  # Ajout des sets
+    columns_to_display = ["Match #", "Date", "Terrain", "Joueur", "Résultat"] + set_columns + ["Remarques"]  # Ajout de la colonne "Remarques"
+
+
+
     
     data_filtered_display = data_filtered[columns_to_display]
     st.dataframe(data_filtered_display.set_index("Match #"))
