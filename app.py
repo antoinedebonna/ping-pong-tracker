@@ -33,6 +33,10 @@ st.title("Suivi des matchs de Ping-Pong")
 # Statistiques avec camembert (nombre de victoires)
 win_counts = data[data["Résultat"] == "✅ V"].groupby("Joueur")["Résultat"].count()
 fig = px.pie(win_counts, values=win_counts.values, names=win_counts.index, title="Nombre de victoires par joueur", hole=0.3)
+
+# Affichage du nombre total de victoires
+st.markdown(f"<h1 style='text-align: center; color: green;'>Total victoires: {win_counts.sum()}</h1>", unsafe_allow_html=True)
+
 st.plotly_chart(fig)
 
 # Formulaire d'ajout de match
