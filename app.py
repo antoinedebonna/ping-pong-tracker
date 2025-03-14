@@ -35,11 +35,11 @@ st.title("Suivi des matchs de Ping-Pong")
 
 # Filtres pour le camembert
 st.subheader("Filtres")
-selected_year = st.selectbox("Sélectionnez une année", sorted(data["Date"].str[:4].dropna().unique(), reverse=True))
-selected_terrain = st.selectbox("Sélectionnez un terrain", data["Terrain"].dropna().unique())
+selected_years = st.multiselect("Sélectionnez une ou plusieurs années", sorted(data["Date"].str[:4].dropna().unique(), reverse=True))
+selected_terrains = st.multiselect("Sélectionnez un ou plusieurs terrains", data["Terrain"].dropna().unique())
 
 # Filtrage des données
-filtered_data = data[(data["Date"].str.startswith(selected_year)) & (data["Terrain"] == selected_terrain)]
+filtered_data = data[data["Date"].str[:4].isin(selected_years) & data["Terrain"].isin(selected_terrains)]
 st.write("Nombre de lignes après filtrage :", len(filtered_data))
 
 # Statistiques avec camembert (nombre de victoires)
@@ -53,7 +53,7 @@ if not filtered_data.empty:
     else:
         st.warning("Aucune victoire détectée pour ce filtre.")
 else:
-    st.warning("Aucune donnée trouvée pour cette année et ce terrain.")
+    st.warning("Aucune donnée trouvée pour les filtres sélectionnés.")
 
 # Formulaire d'ajout de match
 st.subheader("Ajouter un match")
