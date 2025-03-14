@@ -44,11 +44,11 @@ st.write("Nombre de lignes après filtrage :", len(filtered_data))
 
 # Statistiques avec camembert (nombre de victoires)
 if not filtered_data.empty:
-    win_counts = filtered_data[filtered_data["Résultat"] == "✅ V"].groupby("Joueur")["Résultat"].count().dropna()
-    st.write("Victoires détectées :", win_counts)
+    win_counts = filtered_data.groupby(["Joueur", "Résultat"]).size().unstack(fill_value=0)
     
     if not win_counts.empty:
-        fig = px.pie(win_counts, values=win_counts.values, names=win_counts.index, title="Nombre de victoires par joueur", hole=0.3)
+        fig = px.pie(win_counts.sum(axis=1), values=win_counts.sum(axis=1).values, names=win_counts.index, 
+                     title="Nombre de victoires par joueur", hole=0.3)
         st.plotly_chart(fig, key="win_chart")
     else:
         st.warning("Aucune victoire détectée pour ce filtre.")
