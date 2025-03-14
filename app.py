@@ -18,6 +18,27 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+st.markdown(
+    """
+    <style>
+        /* Ajout d'un fond d'écran */
+        body {
+            background-image: url("https://img.freepik.com/vecteurs-libre/fond-filaire-abstrait-degrade_23-2149009903.jpg?t=st=1741969816~exp=1741973416~hmac=9cc677d2ba077698548d9d29cb9ae5c7868f3862473833c8e650d8ad9cb6a9de&w=1380.jpg"); /* Remplace par ton URL */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        /* Rendre le fond du contenu transparent pour mieux voir l'image */
+        .stApp {
+            background: transparent;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
 # URL d'export CSV de Google Sheets
 CSV_URL = "https://docs.google.com/spreadsheets/d/1S9mBu7_hSwSb0JQH-jAQNRUlOWQho6HcGoLJ8B0QjaI/export?format=csv"
 
