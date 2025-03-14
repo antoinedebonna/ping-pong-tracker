@@ -42,6 +42,7 @@ selected_terrains = st.multiselect("Sélectionnez un ou plusieurs terrains", dat
 # Filtrage des données
 filtered_data = data[data["Date"].str[:4].isin(selected_years) & data["Terrain"].isin(selected_terrains)]
 st.write("Nombre de lignes après filtrage :", len(filtered_data))
+st.dataframe(filtered_data)  # Afficher le tableau filtré
 
 # Statistiques avec camembert (nombre de victoires)
 if not filtered_data.empty:
