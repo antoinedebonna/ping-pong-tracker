@@ -64,8 +64,12 @@ else:
 
 # Graphique en ligne (évolution des victoires)
 if not filtered_data.empty:
-    filtered_data = filtered_data.sort_values("Date").reset_index(drop=True)
-    filtered_data["Match_Numero"] = range(1, len(filtered_data) + 1)
+    if "Date" in filtered_data.columns and not filtered_data["Date"].isnull().all():
+        filtered_data = filtered_data.sort_values("Date").reset_index(drop=True)
+        filtered_data["Match_Numero"] = range(1, len(filtered_data) + 1)
+    else:
+        st.warning("Les données n'ont pas de colonne 'Date' valide.")
+
     
     # Calculer le cumul des victoires
     cumulative_wins = filtered_data.copy()
