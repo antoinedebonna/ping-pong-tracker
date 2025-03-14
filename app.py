@@ -73,7 +73,11 @@ if not filtered_data.empty:
 
     # Calcul du cumul des victoires uniquement pour les victoires (✅ V)
     cumulative_wins = filtered_data.copy()
-    cumulative_wins["Victoire_Cumul"] = cumulative_wins.groupby("Joueur")["Résultat"].apply(lambda x: (x == "✅ V").cumsum())
+    cumulative_wins = cumulative_wins.reset_index(drop=True)  # Réinitialiser l'index avant d'ajouter la colonne
+    cumulative_wins["Victoire_Cumul"] = (
+        cumulative_wins.groupby("Joueur")["Résultat"]
+        .transform(lambda x: (x == "✅ V").astype(int).cumsum())
+    )
 
     # Création du graphique avec Plotly
     fig_line = px.line(cumulative_wins, x="Match_Numero", y="Victoire_Cumul", color="Joueur", markers=True,
