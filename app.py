@@ -30,8 +30,15 @@ worksheet = authenticate_gspread()
 # Interface principale
 st.title("Suivi des matchs de Ping-Pong")
 
+# Filtres pour le camembert
+st.subheader("Filtres")
+selected_year = st.selectbox("Sélectionnez une année", sorted(data["Date"].str[:4].unique(), reverse=True))
+selected_terrain = st.selectbox("Sélectionnez un terrain", data["Terrain"].unique())
+
+filtered_data = data[(data["Date"].str.startswith(selected_year)) & (data["Terrain"] == selected_terrain)]
+
 # Statistiques avec camembert (nombre de victoires)
-win_counts = data[data["Résultat"] == "✅ V"].groupby("Joueur")["Résultat"].count()
+win_counts = filtered_data[filtered_data["Résultat"] == "✅ V"].groupby("Joueur")["Résultat"].count()
 fig = px.pie(win_counts, values=win_counts.values, names=win_counts.index, title="Nombre de victoires par joueur", hole=0.3)
 
 # Affichage du nombre de victoires par joueur
